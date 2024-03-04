@@ -29,4 +29,6 @@ Setup your environmental variables with a `.env` file in the root of the directo
 
 After starting the server, you can use the platform through the provided API endpoints.
 
+A video demonstrating the usage of the app can be found here: [Demo Video](https://drive.google.com/file/d/1MxMiJBe6oZebi-EgdCHO1RJlda1yJEmf/view?usp=drive_link)
+
 This project is licensed under the [MIT License](LICENSE).

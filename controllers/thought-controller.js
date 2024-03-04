@@ -4,7 +4,10 @@ const { reactionExists}  = require('../utils/helpers');
 const getOneThought = async (req, res) => {
     try {
         const thought_id = req.params.thought_id;
-        const thought = await Thought.find({ _id: thought_id})
+        const thought = await Thought.find({ _id: thought_id});
+        if (!thought || thought.length === 0) {
+            return res.status(400).json({ message: 'No thought found with that id' });
+        } 
         return res.status(200).json({ thought: thought });
     } catch (err) {
         return res.status(500).json({ message: `Error getting user thoughts: ${err}` });
@@ -136,4 +139,10 @@ const deleteReaction = async (req, res) => {
     }
 }
 
-module.exports = { getOneThought, postUserThought, getAllThoughts, updateThought, deleteThought, addReaction, deleteReaction };
+module.exports = { getOneThought, 
+                   postUserThought, 
+                   getAllThoughts, 
+                   updateThought, 
+                   deleteThought, 
+                   addReaction,
+                   deleteReaction };

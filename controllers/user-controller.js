@@ -56,7 +56,7 @@ const getAllUsers = async (req, res) => {
     } catch(err){
         return res.status(500).json({ message: `Error getting users: ${err}` });
     }
-}
+};
 
 const getOneUser = async (req, res) => {
     try{
@@ -72,7 +72,7 @@ const getOneUser = async (req, res) => {
     } catch(err) {
         return res.status(500).json({ message: `Error getting single user: ${err}`});
     }
-}
+};
 
 const createNewUser = async (req, res) => {
     try{
@@ -100,7 +100,7 @@ const createNewUser = async (req, res) => {
     } catch(err) {
         return res.status(500).json({ message: `Error creating user: ${err}` });
     }
-}
+};
 
 const deleteUser = async (req, res) => {
     try{
@@ -111,17 +111,23 @@ const deleteUser = async (req, res) => {
             return res.status(400).json({ message: `No user found with specified id`});
         } else {
             await User.updateMany(
-                { $pull: { friends: { _id: user_id }}}
+                {}, // match all documents
+                { $pull: { friends: user_id }}
             );
 
-            await Thought.deleteMany(user.username);
+            await Thought.deleteMany(
+                {},
+                { username: user.username }
+            );
+
+            await User.findByIdAndDelete({ _id: user_id });
 
             return res.status(200).json({ message: 'Successful deletion' });
         }
     } catch(err) {
         return res.status(500).json({ message: `Error deleting user: ${err}` });
     }
-}
+};
 
 const updateUser = async (req, res) => {
     try{
@@ -139,7 +145,7 @@ const updateUser = async (req, res) => {
     } catch(err) {
         return res.status(500).json({ message: `Error updating user: ${err}` });
     }
-}
+};
 
 const addFriend = async (req, res) => {
     try {
@@ -186,4 +192,12 @@ const removeFriend = async (req, res) => {
     }
 }
 
-module.exports = { getAllUsers, createNewUser, deleteUser, updateUser, getOneUser, addFriend, removeFriend, login, logout };
+module.exports = { getAllUsers, 
+                   createNewUser, 
+                   deleteUser, 
+                   updateUser, 
+                   getOneUser, 
+                   addFriend, 
+                   removeFriend, 
+                   login, 
+                   logout };
