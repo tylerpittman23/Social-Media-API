@@ -1,5 +1,53 @@
+const bcrypt = require('bcrypt');
 const { User, Thought } = require('../models');
 const { onFriendsList } = require('../utils/helpers');
+
+const login = async (req, res) => {
+    try {
+        if (req.session.logged_in == true) {
+            return res.status(400).json({ message: 'You are already logged in' });
+        }
+        const { email, password } = req.body;
+        const user = await User.findOne({ email: email });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        const isValid = await bcrypt.compare(password, user.password);
+
+        if (isValid) {
+            req.session.regenerate((err) => {
+                if (err) {
+                    return res.status(500).json({ message: `Error regenerating session: ${err}` });
+                }
+        
+                req.session.user_id = user._id;
+                req.session.logged_in = true;
+                console.log('session after logging in', req.session);
+        
+                return res.status(200).json({ message: 'Logged in' });
+            });
+        }
+
+    } catch(err) {
+        return res.status(500).json({ message: `Error logging in: ${err} `});
+    }
+};
+
+const logout = async (req, res) => {
+    try {
+        if (req.session.logged_in === true) {
+            req.session.destroy(() => {
+                return res.status(200).json({ message: 'Successfully logged out' });
+            });
+        } else {
+            return res.status(400).json({ message: 'You are not logged in' });
+        }
+    } catch(err) {
+        return res.status(500).json({ message: `Error logging out: ${err}` });
+    }
+};
 
 const getAllUsers = async (req, res) => {
     try{
@@ -28,8 +76,27 @@ const getOneUser = async (req, res) => {
 
 const createNewUser = async (req, res) => {
     try{
-        const newUser = await User.create(req.body);
-        return res.status(200).json({ messsage: 'Success', newUser: newUser });
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+        const newUserData = {
+            username: req.body.username,
+            email: req.body.email,
+            password: hashedPassword
+        }
+
+        const newUser = await User.create(newUserData);
+
+        req.session.regenerate((err) => {
+            if (err) {
+                return res.status(500).json({ message: `Error regenerating session: ${err}` });
+            }
+    
+            req.session.user_id = newUser._id;
+            req.session.logged_in = true;
+            console.log('session after account creation', req.session);
+    
+            return res.status(200).json({ message: 'Thanks for joining us! Logged in...', newUser: newUser });
+        });
     } catch(err) {
         return res.status(500).json({ message: `Error creating user: ${err}` });
     }
@@ -119,4 +186,4 @@ const removeFriend = async (req, res) => {
     }
 }
 
-module.exports = { getAllUsers, createNewUser, deleteUser, updateUser, getOneUser, addFriend, removeFriend };
+module.exports = { getAllUsers, createNewUser, deleteUser, updateUser, getOneUser, addFriend, removeFriend, login, logout };

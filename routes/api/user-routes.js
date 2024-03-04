@@ -5,11 +5,19 @@ const { getAllUsers,
         deleteUser,
         getOneUser,
         addFriend, 
-        removeFriend } = require('../../controllers/user-controller');
+        removeFriend,
+        login,
+        logout } = require('../../controllers/user-controller');
 
 router.route('/')
     .get(getAllUsers)
     .post(createNewUser);
+
+router.route('/login')
+    .post(login)
+
+router.route('/logout')
+    .post(logout)
 
 router.route('/:user_id')
     .get(getOneUser)

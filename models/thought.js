@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 const reactionSchema  = require('./reaction');
+const { format } = require('date-fns');
 
 const thoughtSchema = new Schema(
     {
@@ -11,7 +12,8 @@ const thoughtSchema = new Schema(
         },
         createdAt: {
             type: Date,
-            default: Date.now
+            default: Date.now,
+            get: (dateValue) => format(dateValue, 'PPPppp'),
         },
         username: {
             type: String,
@@ -21,6 +23,7 @@ const thoughtSchema = new Schema(
     },
     {
         toJSON: {
+            getters: true,
             virtuals: true,
         },
         id: false,

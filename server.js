@@ -10,7 +10,10 @@ const app = express();
 
 const sess = {
     secret: process.env.SECRET_KEY,
-    store: MongoStore.create({ mongoUrl: process.env.DB_URI }),
+    store: MongoStore.create({ 
+        mongoUrl: process.env.DB_URI,
+        collectionName: 'sessions'
+    }),
     cookie: {
         maxAge: 86400000,
         httpOnly: true,
@@ -24,9 +27,8 @@ const sess = {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use('/api', routes);
 app.use(session(sess));
-
+app.use('/api', routes);
 
 db.once('open', () => {
     try { 
