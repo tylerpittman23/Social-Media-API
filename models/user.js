@@ -15,6 +15,11 @@ const userSchema = new Schema({
             unique: true,
             match: [emailCheckRegex, 'Invalid email address'],
         },
+        password: {
+            type: String,
+            required: true,
+            minLength: 4,
+        },
         thoughts: [{
             type: Schema.Types.ObjectId,
             ref: 'thought'

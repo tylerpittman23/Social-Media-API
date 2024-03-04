@@ -1,5 +1,5 @@
-const { User } = require('../models');
-const onFriendsList = require('../utils/helpers');
+const { User, Thought } = require('../models');
+const { onFriendsList } = require('../utils/helpers');
 
 const getAllUsers = async (req, res) => {
     try{
@@ -14,7 +14,8 @@ const getOneUser = async (req, res) => {
     try{
         const user_id = req.params.user_id;
         const user = await User.findOne({ _id: user_id })
-        .populate({ path: 'thoughts', select: '-__v' });
+        .populate({ path: 'thoughts', select: '-__v' })
+        .populate({ path: 'friends', select: '-__v' });
         if (!user) {
             return res.status(400).json({ message: 'No user found with specified id' });
         } else {
@@ -38,10 +39,16 @@ const deleteUser = async (req, res) => {
     try{
         const user_id = req.params.user_id;
         const user = await User.findOne({ _id: user_id });
+        console.log('user to delete', user);
         if (!user) {
             return res.status(400).json({ message: `No user found with specified id`});
         } else {
-            await User.findOneAndDelete({ _id: user_id });
+            await User.updateMany(
+                { $pull: { friends: { _id: user_id }}}
+            );
+
+            await Thought.deleteMany(user.username);
+
             return res.status(200).json({ message: 'Successful deletion' });
         }
     } catch(err) {
