@@ -22,8 +22,8 @@ Navigate to the directory and `npm i` to install required dependencies
 3. **Environmental variables**
 Setup your environmental variables with a `.env` file in the root of the directory and include the following
 
-DB_URI=mongodb://localhost:27017/yourDatabaseName
-SECRET_KEY=yourSecretKey
+- DB_URI=mongodb://localhost:27017/yourDatabaseName
+- SECRET_KEY=yourSecretKey
 
 4. **Start the server**
 
